@@ -3,128 +3,119 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SDI VPID Decoder / Builder</title>
-  <meta name="theme-color" content="#111827" />
+  <title>SDI VPID Decoder / Generator</title>
+  <meta name="theme-color" content="#07101f" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
-    :root{--bg:#0b1020;--panel:#121a2f;--muted:#94a3b8;--text:#e5e7eb;--accent:#38bdf8;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--line:#24304a;}
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#070b16,#0b1020);color:var(--text);}
-    header{padding:22px 18px;border-bottom:1px solid var(--line);background:#0b1020cc;position:sticky;top:0;backdrop-filter:blur(8px);z-index:5}
-    h1{font-size:22px;margin:0 0 6px;color:white}.sub{color:var(--muted);font-size:13px}.wrap{max-width:980px;margin:auto;padding:18px}.grid{display:grid;grid-template-columns:1fr;gap:16px}@media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px #0005}.card h2{font-size:18px;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    label{font-size:12px;color:var(--muted);display:block;margin:0 0 5px} input,select,button,textarea{width:100%;border-radius:10px;border:1px solid #334155;background:#0f172a;color:var(--text);padding:10px;font-size:15px} textarea{min-height:72px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace} button{cursor:pointer;background:#0ea5e9;border-color:#0284c7;color:#00111d;font-weight:700}button.secondary{background:#1f2937;color:var(--text);border-color:#475569}.result{white-space:pre-wrap;background:#08111f;border:1px solid #24304a;border-radius:12px;padding:14px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.45;min-height:140px}.pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;background:#0f172a;border:1px solid #334155;color:#cbd5e1;margin:2px}.note{font-size:12px;color:var(--muted);line-height:1.45}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)} footer{padding:20px;color:var(--muted);font-size:12px;text-align:center}
+    :root{
+      --bg:#07101f;--panel:#111a2d;--panel2:#0b1426;--line:#263654;--text:#e8f1ff;--muted:#9fb4d3;
+      --accent:#38bdf8;--accent2:#0ea5e9;--soft:#17243b;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;
+      --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+      --sans:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:linear-gradient(180deg,#06101e,#0b1424);color:var(--text);font-family:var(--sans)}
+    header{padding:20px 22px 16px;border-bottom:1px solid var(--line);background:#081120cc;backdrop-filter:blur(10px);position:sticky;top:0;z-index:10}
+    h1{margin:0 0 8px;font-size:25px;letter-spacing:-.02em;color:#fff}.sub{color:#b7c9e5;font-size:14px;line-height:1.35}
+    .wrap{max-width:1120px;margin:0 auto;padding:14px 22px 34px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+    .tab{border:1px solid var(--line);background:#111a2d;color:#fff;border-radius:12px;padding:13px 10px;font-weight:800;cursor:pointer;font-size:16px}.tab.active{background:linear-gradient(180deg,#42c5f5,#1ba8e4);color:#001222;border-color:#39bdf2}.tab:focus{outline:2px solid var(--accent)}
+    .card{background:linear-gradient(180deg,#121d32,#101827);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 18px 40px #0007;margin-bottom:14px}.card h2{margin:0 0 14px;font-size:20px;color:#fff}.small{font-size:12px;color:var(--muted)}
+    label{display:block;margin:0 0 7px;font-size:13px;color:#c4d8f7} input,textarea,select,button{width:100%;border:1px solid #314363;background:#0e1728;color:#fff;border-radius:11px;padding:11px 13px;font-size:15px} textarea{min-height:46px;font-family:var(--mono);resize:vertical} select{appearance:auto}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field{margin-bottom:10px}
+    @media(max-width:760px){.tabs{grid-template-columns:1fr}.grid2,.grid3,.grid4{grid-template-columns:1fr}.wrap{padding:12px}.card{padding:14px}h1{font-size:22px}}
+    button.primary{background:linear-gradient(180deg,#42c5f5,#1ba8e4);color:#001222;border-color:#38bdf8;font-weight:800}button.secondary{background:#111d31;color:#fff;border-color:#334766;font-weight:800}.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}.pillrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}.pill{background:#17243a;border:1px solid #2b405f;border-radius:999px;color:#fff;padding:7px 10px;font-family:var(--mono);font-weight:700;cursor:pointer}.pill:hover{border-color:var(--accent)}
+    .result{white-space:pre-wrap;background:#06101e;border:1px solid #2a3b59;border-radius:14px;padding:15px;font-family:var(--mono);font-size:14px;line-height:1.55;min-height:230px;color:#fff}.result .muted{color:var(--muted)}
+    table{width:100%;border-collapse:separate;border-spacing:0;margin:10px 0 18px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#081120}th,td{padding:9px 10px;text-align:left;border-bottom:1px solid #1f2f49;vertical-align:top;font-size:13px}th{background:#17243a;color:#fff;font-weight:800}tr:last-child td{border-bottom:0}td.code{font-family:var(--mono);font-weight:800;color:#dff7ff;white-space:nowrap}.note{font-size:13px;line-height:1.5;color:#bfd0e8;background:#0c1729;border:1px solid #263654;border-radius:13px;padding:12px;margin-top:8px}footer{text-align:center;color:#91a7c8;font-size:12px;padding:18px}
+    .hidden{display:none}.status{font-size:12px;color:#9fb4d3;margin-top:10px}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
   </style>
 </head>
 <body>
-<header><h1>SDI VPID Decoder / Builder</h1><div class="sub">SMPTE ST 352 style Video Payload Identifier helper for SD/HD/3G/6G/12G workflows</div></header>
-<div class="wrap">
-  <div class="grid">
-    <section class="card">
-      <h2>Decode VPID</h2>
-      <div class="row">
-        <label for="hexIn">VPID bytes, e.g. 89 C9 00 01</label>
-        <textarea id="hexIn" spellcheck="false">89 C9 00 01</textarea>
-      </div>
-      <div class="row2"><button onclick="decodeVPID()">Decode</button><button class="secondary" onclick="loadExample()">Load examples</button></div>
-      <div id="decodeOut" class="result"></div>
-    </section>
+<header>
+  <h1>SDI VPID Decoder / Generator</h1>
+  <div class="sub">Bidirectional helper for SMPTE ST 352 Video Payload Identifier: decode 4 hex bytes or select parameters and generate a VPID.</div>
+</header>
+<main class="wrap">
+  <nav class="tabs" aria-label="Tool sections">
+    <button class="tab active" data-tab="decode">Decode</button>
+    <button class="tab" data-tab="build">Generate VPID</button>
+    <button class="tab" data-tab="tables">Tables</button>
+  </nav>
 
-    <section class="card">
-      <h2>Build VPID</h2>
-      <div class="row">
-        <label for="standard">Payload Identifier / Interface</label>
-        <select id="standard"></select>
-      </div>
-      <div class="row3">
-        <div><label for="rate">Picture rate</label><select id="rate"></select></div>
-        <div><label for="transport">Transport</label><select id="transport"><option value="1">Progressive transport</option><option value="0">Interlaced transport</option></select></div>
-        <div><label for="picture">Picture</label><select id="picture"><option value="1">Progressive picture</option><option value="0">Interlaced picture</option></select></div>
-      </div>
-      <div class="row3">
-        <div><label for="transfer">Transfer</label><select id="transfer"><option value="0">SDR-TV</option><option value="1">HLG</option><option value="2">PQ</option><option value="3">Unspecified / camera log</option></select></div>
-        <div><label for="colorimetry">Colorimetry</label><select id="colorimetry"><option value="0">Rec.709</option><option value="1">Color VANC packet</option><option value="2">UHDTV / Rec.2020</option><option value="3">Unknown</option></select></div>
-        <div><label for="sampling">Sampling</label><select id="sampling"></select></div>
-      </div>
-      <div class="row3">
-        <div><label for="aspect">Aspect</label><select id="aspect"><option value="1">16:9</option><option value="0">Unknown / 4:3</option></select></div>
-        <div><label for="horz">Horizontal sampling</label><select id="horz"><option value="0">1920 / 720</option><option value="1">2048 / 960</option></select></div>
-        <div><label for="depth">Bit depth</label><select id="depth"><option value="0">10-bit full range</option><option value="1" selected>10-bit</option><option value="2">12-bit</option><option value="3">12-bit full range / reserved</option></select></div>
-      </div>
-      <div class="row3">
-        <div><label for="link">Link assignment</label><select id="link"><option value="0">Single / Link 1 / A</option><option value="1">Link 2 / B</option><option value="2">Link 3</option><option value="3">Link 4</option><option value="4">Link 5</option><option value="5">Link 6</option><option value="6">Link 7</option><option value="7">Link 8</option></select></div>
-        <div><label for="colorFormat">Color format</label><select id="colorFormat"><option value="0">YCbCr</option><option value="1">ICtCp</option></select></div>
-        <div><label for="audioCopy">Audio status</label><select id="audioCopy"><option value="0">Additional channels</option><option value="1">Copied channels</option></select></div>
-      </div>
-      <button onclick="buildVPID()">Build VPID</button>
-      <div id="buildOut" class="result"></div>
-    </section>
-  </div>
-
-  <section class="card" style="margin-top:16px">
-    <h2>Notes</h2>
-    <div class="note">
-      This helper follows the practical VPID table structure used by common waveform monitors: UDW1 = payload identifier, UDW2 = transport/picture/transfer/rate, UDW3 = aspect/colorimetry/horizontal/sampling, UDW4 = link/audio/color-format/bit-depth. Some fields are standard-dependent; reserved bits are kept at zero. S-Log3 is not a fixed ST 352 transfer characteristic; use <b>Unspecified / camera log</b> and document it externally if needed.
+  <section id="decode" class="panel card">
+    <div class="field"><label for="hexIn">VPID / Payload ID, 4 bytes</label><input id="hexIn" value="89 C9 00 01" spellcheck="false" /></div>
+    <div class="btnrow"><button class="primary" onclick="decodeVPID()">Decode</button><button class="secondary" onclick="toggleExamples()">Examples</button></div>
+    <div id="examples" class="pillrow">
+      <span class="pill" onclick="setExample('89 C9 00 01')">89 C9 00 01</span>
+      <span class="pill" onclick="setExample('8A CA 80 01')">8A CA 80 01</span>
+      <span class="pill" onclick="setExample('CE C9 A0 01')">CE C9 A0 01</span>
+      <span class="pill" onclick="setExample('C0 C9 A0 01')">C0 C9 A0 01</span>
+      <span class="pill" onclick="setExample('97 C9 A0 01')">97 C9 A0 01</span>
+      <span class="pill" onclick="setExample('85 05 00 01')">85 05 00 01</span>
     </div>
+    <div id="decodeOut" class="result"></div>
   </section>
-</div>
-<footer>© tech.result – SDI VPID helper</footer>
+
+  <section id="build" class="panel card hidden">
+    <h2>Generate VPID</h2>
+    <div class="field"><label for="standard">Payload Identifier / Interface</label><select id="standard"></select></div>
+    <div class="grid3">
+      <div class="field"><label for="rate">Picture rate</label><select id="rate"></select></div>
+      <div class="field"><label for="transport">Transport</label><select id="transport"><option value="1">Progressive transport</option><option value="0">Interlaced transport</option></select></div>
+      <div class="field"><label for="picture">Picture</label><select id="picture"><option value="1">Progressive picture</option><option value="0">Interlaced picture</option></select></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label for="transfer">Transfer characteristic</label><select id="transfer"><option value="0">SDR-TV</option><option value="1">HLG</option><option value="2">PQ</option><option value="3">Unspecified / camera log</option></select></div>
+      <div class="field"><label for="colorimetry">Colorimetry</label><select id="colorimetry"><option value="0">Rec.709</option><option value="1">Color VANC packet</option><option value="2">UHDTV / Rec.2020</option><option value="3">Unknown</option></select></div>
+      <div class="field"><label for="sampling">Sampling structure</label><select id="sampling"></select></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label for="aspect">Aspect ratio flag</label><select id="aspect"><option value="1">16:9</option><option value="0">Unknown / 4:3 depending on standard</option></select></div>
+      <div class="field"><label for="horz">Horizontal sampling</label><select id="horz"><option value="0">1920 / 720 / unknown</option><option value="1">2048 / 960</option></select></div>
+      <div class="field"><label for="depth">Bit depth</label><select id="depth"><option value="0">10-bit full range</option><option value="1" selected>10-bit</option><option value="2">12-bit</option><option value="3">12-bit full range / reserved</option></select></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label for="link">Channel / link assignment</label><select id="link"><option value="0">Single / Link 1 / A</option><option value="1">Link 2 / B</option><option value="2">Link 3</option><option value="3">Link 4</option><option value="4">Link 5</option><option value="5">Link 6</option><option value="6">Link 7</option><option value="7">Link 8</option></select></div>
+      <div class="field"><label for="colorFormat">Color format</label><select id="colorFormat"><option value="0">YCbCr / RGB</option><option value="1">ICtCp</option></select></div>
+      <div class="field"><label for="audioCopy">Audio status</label><select id="audioCopy"><option value="0">Additional channels</option><option value="1">Copied channels</option></select></div>
+    </div>
+    <button class="primary" onclick="buildVPID()">Generate VPID</button>
+    <div style="height:12px"></div>
+    <div id="buildOut" class="result"></div>
+  </section>
+
+  <section id="tables" class="panel card hidden">
+    <h2>Reference Tables</h2>
+    <div class="note">The tables below are the built-in practical tables used by the decoder/generator. They follow the structure shown on the Tektronix 4K/UHD poster: UDW1 payload identifier, UDW2 picture rate, UDW3 sampling structure, and UDW4 bit depth / link related fields.</div>
+    <h3>UDW1 / Byte 1 - Payload Identifier</h3><div id="tblUdw1"></div>
+    <h3>Picture Rate</h3><div id="tblRate"></div>
+    <h3>Sampling Structure</h3><div id="tblSampling"></div>
+    <h3>Transfer / Colorimetry / Bit Depth</h3><div id="tblOther"></div>
+  </section>
+</main>
+<footer>© tech.result – local HTML/PWA, no server connection required</footer>
 <script>
 const UDW1 = {
-  0x81:{std:'ST 259',desc:'SD-SDI'},
-  0x84:{std:'ST 292-1',desc:'720p HD-SDI'},
-  0x85:{std:'ST 292-1',desc:'1080 HD-SDI'},
-  0x87:{std:'ST 372',desc:'Dual Link 1080 / 2048x1080'},
-  0x88:{std:'ST 425-1',desc:'2x720, 3G Level B'},
-  0x89:{std:'ST 425-1',desc:'3G Level A'},
-  0x8A:{std:'ST 425-1',desc:'3G Level B'},
-  0x8B:{std:'ST 425-1',desc:'2x720, 3G Level B'},
-  0x8C:{std:'ST 425-1',desc:'2x1080, 3G Level B'},
-  0x8D:{std:'ST 425-1',desc:'2x 483/576, 3G Level B'},
-  0x8E:{std:'ST 425-2',desc:'3D 720'},
-  0x8F:{std:'ST 425-2',desc:'3D 1080'},
-  0x90:{std:'ST 435-1',desc:'10G'},
-  0x91:{std:'ST 425-4',desc:'3D 720, 3G Level A'},
-  0x92:{std:'ST 425-4',desc:'3D 1080, 3G Level A'},
-  0x93:{std:'ST 425-4',desc:'3D 1080, 3G Level B Dual Link'},
-  0x94:{std:'ST 425-3',desc:'1080, Dual 3G Level A'},
-  0x95:{std:'ST 425-3',desc:'1080, 3G Level B Dual Link'},
-  0x96:{std:'ST 425-3',desc:'1080, 3G Level B Dual Stream'},
-  0x97:{std:'ST 425-5',desc:'2160, Quad 3G Level A'},
-  0x98:{std:'ST 425-5',desc:'2160, Quad 3G Level B Dual Link'},
-  0x99:{std:'ST 425-6',desc:'3D 1080, 3G Level A'},
-  0x9A:{std:'ST 425-6',desc:'3D 1080, 3G Level B Dual Link'},
-  0x9B:{std:'ST 425-6',desc:'3D 1080, 3G Level B Dual Stream'},
-  0xA0:{std:'ST 435-1',desc:'Octa-link 2160 10G'},
-  0xA1:{std:'ST 2036-3',desc:'UHDTV1 single/multi 10G'},
-  0xA2:{std:'ST 2036-3',desc:'UHDTV2 multi 10G'},
-  0xA5:{std:'ST 2036-4',desc:'UHDTV1 / 4K multi 10G'},
-  0xA6:{std:'ST 2036-4',desc:'UHDTV2 / 8K multi 10G'},
-  0xB0:{std:'ST 2047-2',desc:'VC-2 1.5G SDI'},
-  0xB1:{std:'ST 292-2',desc:'3D 1080/720 1.5G Dual Link'},
-  0xB2:{std:'ST 2047-4',desc:'VC-2 Level 65 SD-SDI'},
-  0xB3:{std:'ST 2048-3',desc:'4096x2160 Multi 10G'},
-  0xB4:{std:'RDD 22',desc:'2048x1556 1.5G Dual Link'},
-  0xB5:{std:'RDD 22',desc:'2048x1556 3G'},
-  0xC0:{std:'ST 2081-10',desc:'2160-line 6G-SDI Mode 1'},
-  0xC1:{std:'ST 2081-10',desc:'1080-line 6G-SDI Mode 2'},
-  0xCE:{std:'ST 2082-10',desc:'2160-line 12G-SDI Mode 1'},
-  0xCF:{std:'ST 2082-10',desc:'1080-line 12G-SDI Mode 2'}
+  0x81:{std:'ST 259',desc:'SD-SDI'},0x84:{std:'ST 292-1',desc:'720p HD-SDI'},0x85:{std:'ST 292-1',desc:'1080 HD-SDI'},0x87:{std:'ST 372',desc:'Dual Link 1080 / 2048x1080'},0x88:{std:'ST 425-1',desc:'2x720, 3G Level B'},0x89:{std:'ST 425-1',desc:'3G Level A'},0x8A:{std:'ST 425-1',desc:'3G Level B'},0x8B:{std:'ST 425-1',desc:'2x720, 3G Level B'},0x8C:{std:'ST 425-1',desc:'2x1080, 3G Level B'},0x8D:{std:'ST 425-1',desc:'2x 483/576, 3G Level B'},0x8E:{std:'ST 425-2',desc:'3D 720'},0x8F:{std:'ST 425-2',desc:'3D 1080'},0x90:{std:'ST 435-1',desc:'10G'},0x91:{std:'ST 425-4',desc:'3D 720, 3G Level A'},0x92:{std:'ST 425-4',desc:'3D 1080, 3G Level A'},0x93:{std:'ST 425-4',desc:'3D 1080, 3G Level B Dual Link'},0x94:{std:'ST 425-3',desc:'1080, Dual 3G Level A'},0x95:{std:'ST 425-3',desc:'1080, 3G Level B Dual Link'},0x96:{std:'ST 425-3',desc:'1080, 3G Level B Dual Stream'},0x97:{std:'ST 425-5',desc:'2160, Quad 3G Level A'},0x98:{std:'ST 425-5',desc:'2160, Quad 3G Level B Dual Link'},0x99:{std:'ST 425-6',desc:'3D 1080, 3G Level A'},0x9A:{std:'ST 425-6',desc:'3D 1080, 3G Level B Dual Link'},0x9B:{std:'ST 425-6',desc:'3D 1080, 3G Level B Dual Stream'},0xA0:{std:'ST 435-1',desc:'Octa-link 2160 10G'},0xA1:{std:'ST 2036-3',desc:'UHDTV1 single/multi 10G'},0xA2:{std:'ST 2036-3',desc:'UHDTV2 multi 10G'},0xA5:{std:'ST 2036-4',desc:'UHDTV1 / 4K multi 10G'},0xA6:{std:'ST 2036-4',desc:'UHDTV2 / 8K multi 10G'},0xB0:{std:'ST 2047-2',desc:'VC-2 1.5G SDI'},0xB1:{std:'ST 292-2',desc:'3D 1080/720 1.5G Dual Link'},0xB2:{std:'ST 2047-4',desc:'VC-2 Level 65 SD-SDI'},0xB3:{std:'ST 2048-3',desc:'4096x2160 Multi 10G'},0xB4:{std:'RDD 22',desc:'2048x1556 1.5G Dual Link'},0xB5:{std:'RDD 22',desc:'2048x1556 3G'},0xC0:{std:'ST 2081-10',desc:'2160-line 6G-SDI Mode 1'},0xC1:{std:'ST 2081-10',desc:'1080-line 6G-SDI Mode 2'},0xCE:{std:'ST 2082-10',desc:'2160-line 12G-SDI Mode 1'},0xCF:{std:'ST 2082-10',desc:'1080-line 12G-SDI Mode 2'}
 };
-const RATE = {0x0:'No defined value',0x1:'Reserved 96/1.001',0x2:'24/1.001',0x3:'24',0x4:'48/1.001',0x5:'25',0x6:'30/1.001',0x7:'30',0x8:'48',0x9:'50',0xA:'60/1.001 (59.94)',0xB:'60',0xC:'Reserved 96',0xD:'Reserved 100',0xE:'Reserved 120/1.001',0xF:'Reserved 120'};
-const SAMPLING = {0x0:'4:2:2 (YCbCr) / 4:2:2 (ICtCp)',0x1:'4:4:4 (YCbCr) / 4:4:4 (ICtCp)',0x2:'4:4:4 (G/B/R)',0x3:'4:2:0 / 4:2:0 (ICtCp)',0x4:'4:2:2:4 (YCbCrA) / (ICtCp+A)',0x5:'4:4:4:4 (YCbCrA) / (ICtCp+A)',0x6:'4:4:4:4 (G/B/R/A)',0x7:'SMPTE ST 2048-2 F-S',0x8:'4:2:2:4 (YCbCrD) / (ICtCp+D)',0x9:'4:4:4:4 (YCbCrD) / (ICtCp+D)',0xA:'4:4:4:4 (G/B/R/D)',0xB:'Reserved',0xC:'Reserved',0xD:'Reserved',0xE:'4:4:4 (X/Y/Z)',0xF:'Reserved'};
-const TRANSFER = {0:'SDR-TV',1:'HLG',2:'PQ',3:'Unspecified / camera log (for example S-Log3, not explicit in VPID)'};
-const COLORIMETRY = {0:'Rec.709',1:'Color VANC packet',2:'UHDTV / Rec.2020',3:'Unknown'};
-const DEPTH = {0:'10-bit full range',1:'10-bit',2:'12-bit',3:'12-bit full range / reserved depending on standard'};
-function hx(n){return n.toString(16).toUpperCase().padStart(2,'0')}
-function parseBytes(s){let t=s.match(/[0-9a-fA-F]{1,2}/g)||[];return t.map(x=>parseInt(x,16)).slice(0,4)}
-function guessFormat(id,rate,transport,picture){let r=RATE[rate]||'';let base=(UDW1[id]?.desc||'Unknown interface');let img=''; if(base.includes('2160')) img='2160'; else if(base.includes('1080')) img='1080'; else if(base.includes('720')) img='720'; else if(base.includes('SD')) img='SD'; if(img) return `${img}${picture?'p':'i'}/${r.replace('60/1.001 (59.94)','59.94')} (${base})`; return base;}
-function decodeVPID(){const b=parseBytes(document.getElementById('hexIn').value);if(b.length!==4){decodeOut.textContent='ERROR: enter exactly four hex bytes, e.g. 89 C9 00 01';return;} const [b1,b2,b3,b4]=b; const id=UDW1[b1]; const transport=(b2>>7)&1, picture=(b2>>6)&1; const transfer=(b2>>4)&3; const rate=b2&0x0F; const aspect=(b3>>7)&1; const horz=(b3>>6)&1; const color=(b3>>4)&3; const sampling=b3&0x0F; const link=(b4>>5)&7; const audio=(b4>>3)&1; const colorFmt=(b4>>2)&1; const depth=b4&3; const level=b1===0x89?'3G Level A':(b1===0x8A||b1===0x8B||b1===0x8C||b1===0x95||b1===0x96||b1===0x98?'3G Level B / multi-link':'See UDW1 standard');
-let lines=[]; lines.push(`Input VPID: ${b.map(hx).join(' ')}`); lines.push(''); lines.push(`Payload ID / UDW1: 0x${hx(b1)} - ${id?`${id.std} - ${id.desc}`:'Unknown / not in built-in table'}`); lines.push(`Derived format: ${guessFormat(b1,rate,transport,picture)}`); lines.push(`Level / mapping: ${level}`); lines.push(''); lines.push(`Transport interface: ${transport?'Progressive':'Interlaced'}`); lines.push(`Picture structure: ${picture?'Progressive picture':'Interlaced picture'}`); lines.push(`Transfer characteristic: ${TRANSFER[transfer]}`); lines.push(`Picture rate: ${RATE[rate]}`); lines.push(''); lines.push(`Aspect ratio flag: ${aspect?'16:9':'Unknown / 4:3 depending on standard'}`); lines.push(`Horizontal sampling flag: ${horz?'2048 / 960':'1920 / 720 / unknown depending on standard'}`); lines.push(`Colorimetry: ${COLORIMETRY[color]}`); lines.push(`Sampling structure: ${SAMPLING[sampling]}`); lines.push(''); lines.push(`Channel / link assignment: ${link===0?'Single / Link 1 / Link A':'Link '+(link+1)}`); lines.push(`Audio copy status: ${audio?'Copied channels':'Additional channels'}`); lines.push(`Color format: ${colorFmt?'ICtCp':'YCbCr'}`); lines.push(`Bit depth: ${DEPTH[depth]}`); lines.push(''); lines.push(`Bytes: UDW1=${hx(b1)} UDW2=${hx(b2)} UDW3=${hx(b3)} UDW4=${hx(b4)}`); decodeOut.textContent=lines.join('\n');}
-function buildVPID(){const b1=parseInt(standard.value), rateVal=parseInt(rate.value), tr=parseInt(transport.value), pic=parseInt(picture.value), tf=parseInt(transfer.value), col=parseInt(colorimetry.value), samp=parseInt(sampling.value), asp=parseInt(aspect.value), hz=parseInt(horz.value), dep=parseInt(depth.value), lnk=parseInt(link.value), cf=parseInt(colorFormat.value), ac=parseInt(audioCopy.value); const b2=(tr<<7)|(pic<<6)|(tf<<4)|rateVal; const b3=(asp<<7)|(hz<<6)|(col<<4)|samp; const b4=(lnk<<5)|(ac<<3)|(cf<<2)|dep; const bytes=[b1,b2,b3,b4]; let text=[]; text.push(`Generated VPID: ${bytes.map(hx).join(' ')}`); text.push(''); text.push(`UDW1: 0x${hx(b1)} - ${UDW1[b1].std} - ${UDW1[b1].desc}`); text.push(`UDW2: 0x${hx(b2)} - ${tr?'progressive transport':'interlaced transport'}, ${pic?'progressive picture':'interlaced picture'}, ${TRANSFER[tf]}, ${RATE[rateVal]}`); text.push(`UDW3: 0x${hx(b3)} - ${asp?'16:9':'unknown/4:3'}, ${hz?'2048/960':'1920/720'}, ${COLORIMETRY[col]}, ${SAMPLING[samp]}`); text.push(`UDW4: 0x${hx(b4)} - link ${lnk+1}, ${ac?'copied audio':'additional audio'}, ${cf?'ICtCp':'YCbCr'}, ${DEPTH[dep]}`); text.push(''); text.push('Check reserved fields and standard-specific constraints on your waveform monitor/specification before using this in production.'); buildOut.textContent=text.join('\n'); hexIn.value=bytes.map(hx).join(' '); decodeVPID();}
-function init(){Object.entries(UDW1).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${hx(+k)} - ${v.std} - ${v.desc}`;standard.appendChild(o)});standard.value='137';Object.entries(RATE).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${(+k).toString(16).toUpperCase()} - ${v}`;rate.appendChild(o)});rate.value='9';Object.entries(SAMPLING).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${(+k).toString(16).toUpperCase()} - ${v}`;sampling.appendChild(o)});sampling.value='0';decodeVPID();buildVPID();}
-function loadExample(){hexIn.value='89 C9 00 01\nCE C9 A0 01\nC0 C9 A0 01';decodeVPID();}
-window.addEventListener('load',init);
+const RATE={0x0:'No defined value',0x1:'Reserved 96/1.001',0x2:'24/1.001',0x3:'24',0x4:'48/1.001',0x5:'25',0x6:'30/1.001',0x7:'30',0x8:'48',0x9:'50',0xA:'60/1.001 (59.94)',0xB:'60',0xC:'Reserved 96',0xD:'Reserved 100',0xE:'Reserved 120/1.001',0xF:'Reserved 120'};
+const SAMPLING={0x0:'4:2:2 (YCbCr) / 4:2:2 (ICtCp)',0x1:'4:4:4 (YCbCr) / 4:4:4 (ICtCp)',0x2:'4:4:4 (G/B/R)',0x3:'4:2:0 / 4:2:0 (ICtCp)',0x4:'4:2:2:4 (YCbCrA) / (ICtCp+A)',0x5:'4:4:4:4 (YCbCrA) / (ICtCp+A)',0x6:'4:4:4:4 (G/B/R/A)',0x7:'SMPTE ST 2048-2 F-S',0x8:'4:2:2:4 (YCbCrD) / (ICtCp+D)',0x9:'4:4:4:4 (YCbCrD) / (ICtCp+D)',0xA:'4:4:4:4 (G/B/R/D)',0xB:'Reserved',0xC:'Reserved',0xD:'Reserved',0xE:'4:4:4 (X/Y/Z)',0xF:'Reserved'};
+const TRANSFER={0:'SDR-TV',1:'HLG',2:'PQ',3:'Unspecified / camera log (e.g. S-Log3, not explicit in ST 352 VPID)'};
+const COLORIMETRY={0:'Rec.709',1:'Color VANC packet',2:'UHDTV / Rec.2020',3:'Unknown'};
+const DEPTH={0:'10-bit full range',1:'10-bit',2:'12-bit',3:'12-bit full range / reserved depending on standard'};
+function hx(n){return Number(n).toString(16).toUpperCase().padStart(2,'0')}
+function parseBytes(s){let t=(s.match(/[0-9a-fA-F]{1,2}/g)||[]).map(x=>parseInt(x,16));return t.slice(0,4)}
+function cleanRate(s){return (s||'').replace('60/1.001 (59.94)','59.94').replace('Reserved ','')}
+function levelText(id){if(id===0x89||id===0x91||id===0x92||id===0x94||id===0x97||id===0x99)return 'Level A'; if([0x88,0x8A,0x8B,0x8C,0x8D,0x93,0x95,0x96,0x98,0x9A,0x9B].includes(id))return 'Level B / multi-link'; return 'Not applicable / see standard'}
+function guessFormat(id,rate,picture){const r=cleanRate(RATE[rate]); const d=(UDW1[id]?.desc||''); if(id===0x85)return `1080${picture?'p':'i'}/${r}`; if(id===0x84)return `720p/${r}`; if(id===0x89||id===0x8A||id===0x94||id===0x95||id===0x96)return `1080${picture?'p':'i'}/${r}`; if(id===0x97||id===0x98||id===0xC0||id===0xCE)return `2160${picture?'p':'i'}/${r}`; if(id===0xC1||id===0xCF)return `1080${picture?'p':'i'}/${r}`; if(id===0xA6)return `4320${picture?'p':'i'}/${r}`; if(d.includes('SD'))return `SD/${r}`; return d||'Unknown';}
+function decodeVPID(){const b=parseBytes(hexIn.value); if(b.length!==4){decodeOut.textContent='ERROR: enter exactly four hex bytes, e.g. 89 C9 00 01';return;} const [b1,b2,b3,b4]=b; const id=UDW1[b1]; const transport=(b2>>7)&1,picture=(b2>>6)&1,transfer=(b2>>4)&3,rate=b2&15,aspect=(b3>>7)&1,horz=(b3>>6)&1,color=(b3>>4)&3,sampling=b3&15,link=(b4>>5)&7,audio=(b4>>3)&1,colorFmt=(b4>>2)&1,depth=b4&3;
+let lines=[];lines.push(`VPID: ${b.map(x=>hx(x)+'h').join('  ')}`);lines.push('');lines.push(`📦 UDW1 / Byte 1: ${hx(b1)}h - ${id?`${id.std} - ${id.desc}`:'Unknown / not in built-in table'}`);lines.push(`📺 Probable format: ${guessFormat(b1,rate,picture)}`);lines.push(`🧱 Level / mapping: ${levelText(b1)}`);lines.push(`📡 Transport Interface: ${transport?'Progressive Transport':'Interlaced Transport'}`);lines.push(`🖼️ Picture Interface: ${picture?'Progressive Picture':'Interlaced Picture'}`);lines.push(`🎞️ Picture Rate: ${RATE[rate]}`);lines.push(`🧮 Transfer Characteristic: ${TRANSFER[transfer]}`);lines.push(`🌈 Colorimetry: ${COLORIMETRY[color]}`);lines.push(`🔎 Sampling Structure: ${SAMPLING[sampling]}`);lines.push(`📐 Aspect Ratio: ${aspect?'16:9':'Unknown / not set'}`);lines.push(`↔️ Horizontal Sampling: ${horz?'2048 / 960':'1920 / 720 / unknown'}`);lines.push(`🎨 Color Format: ${colorFmt?'ICtCp':'YCbCr / RGB'}`);lines.push(`📏 Bit Depth: ${DEPTH[depth]}`);lines.push(`🔗 Channel/Link Assignment: ${link===0?'Single / Link 1 / Link A':'Link '+(link+1)}`);decodeOut.textContent=lines.join('\n');}
+function buildVPID(){const b1=parseInt(standard.value),rateVal=parseInt(rate.value),tr=parseInt(transport.value),pic=parseInt(picture.value),tf=parseInt(transfer.value),col=parseInt(colorimetry.value),samp=parseInt(sampling.value),asp=parseInt(aspect.value),hz=parseInt(horz.value),dep=parseInt(depth.value),lnk=parseInt(link.value),cf=parseInt(colorFormat.value),ac=parseInt(audioCopy.value); const b2=(tr<<7)|(pic<<6)|(tf<<4)|rateVal; const b3=(asp<<7)|(hz<<6)|(col<<4)|samp; const b4=(lnk<<5)|(ac<<3)|(cf<<2)|dep; const bytes=[b1,b2,b3,b4]; hexIn.value=bytes.map(hx).join(' '); let out=[]; out.push(`Generated VPID: ${bytes.map(hx).join(' ')}`); out.push(''); out.push(`UDW1: ${hx(b1)}h - ${UDW1[b1].std} - ${UDW1[b1].desc}`); out.push(`UDW2: ${hx(b2)}h - ${tr?'progressive transport':'interlaced transport'}, ${pic?'progressive picture':'interlaced picture'}, ${TRANSFER[tf]}, ${RATE[rateVal]}`); out.push(`UDW3: ${hx(b3)}h - ${asp?'16:9':'unknown/4:3'}, ${hz?'2048/960':'1920/720'}, ${COLORIMETRY[col]}, ${SAMPLING[samp]}`); out.push(`UDW4: ${hx(b4)}h - link ${lnk+1}, ${ac?'copied audio':'additional audio'}, ${cf?'ICtCp':'YCbCr/RGB'}, ${DEPTH[dep]}`); out.push(''); out.push('Note: Check standard-specific reserved fields on your waveform monitor/specification before production use.'); buildOut.textContent=out.join('\n'); decodeVPID();}
+function tableFrom(obj,headers){let rows=Object.entries(obj).map(([k,v])=>Array.isArray(v)?[hx(+k),...v]:[hx(+k),v.std||'',v.desc||v]);return '<table><thead><tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map((c,i)=>`<td class="${i===0?'code':''}">${c}</td>`).join('')+'</tr>').join('')+'</tbody></table>'}
+function initTables(){tblUdw1.innerHTML=tableFrom(UDW1,['Hex','SMPTE Standard','Description']); tblRate.innerHTML=tableFrom(RATE,['Hex','Picture Rate']); tblSampling.innerHTML=tableFrom(SAMPLING,['Hex','Sampling Structure']); tblOther.innerHTML='<table><thead><tr><th>Field</th><th>Values</th></tr></thead><tbody>'+`<tr><td>Transfer</td><td>${Object.entries(TRANSFER).map(([k,v])=>k+'h = '+v).join('<br>')}</td></tr><tr><td>Colorimetry</td><td>${Object.entries(COLORIMETRY).map(([k,v])=>k+'h = '+v).join('<br>')}</td></tr><tr><td>Bit Depth</td><td>${Object.entries(DEPTH).map(([k,v])=>k+'h = '+v).join('<br>')}</td></tr>`+'</tbody></table>';}
+function initControls(){Object.entries(UDW1).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${hx(+k)} - ${v.std} - ${v.desc}`;standard.appendChild(o)}); standard.value='137'; Object.entries(RATE).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${(+k).toString(16).toUpperCase()} - ${v}`;rate.appendChild(o)}); rate.value='9'; Object.entries(SAMPLING).forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=`0x${(+k).toString(16).toUpperCase()} - ${v}`;sampling.appendChild(o)}); sampling.value='0';}
+function setExample(v){hexIn.value=v;decodeVPID();showTab('decode')} function toggleExamples(){examples.classList.toggle('hidden')}
+function showTab(name){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==name));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));window.addEventListener('load',()=>{initControls();initTables();decodeVPID();buildVPID();});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js').catch(()=>{});}
 </script>
 </body>
 </html>
